@@ -91,8 +91,6 @@ async function criarTabelaTarefa() {
         const linha = document.createElement('tr');
 
         const date = new Date(element.criado_em).toLocaleString('pt-BR');
-        const tituloEscapado = element.titulo.replace(/'/g, "\\'");
-        const descricaoEscapada = element.descricao.replace(/'/g, "\\'");
 
         linha.innerHTML = `
             <td class="cell-id">#${element.id}</td>
