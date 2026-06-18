@@ -90,22 +90,6 @@ async function criarTabelaTarefa() {
     
     dados.forEach(element => {
         const linha = document.createElement('tr');
-        let a;
-
-        
-        if (element.urgencia === 'nao-urgente') {
-           a =`<span class="badge nao-urgente">Não Urgente</span>`;
-        }
-
-        if (element.urgencia === 'urgente') {
-            a = `<span class="badge urgente">Urgente</span>`; 
-        }
-
-        if (element.urgencia === 'normal') {
-            a = `<span class="badge normal">Normal</span>`;
-        }
-
-        
         const date = new Date(element.criado_em).toLocaleString('pt-BR')
         linha.innerHTML = `
             <td class="cell-id">#${element.id}</td>
@@ -116,8 +100,6 @@ async function criarTabelaTarefa() {
             </td>
 
             <td><span class="badge badge-data">${date}</span></td>
-            <td><span class="badge badge-data">${a}</span></td>
-            
 
             <td>
                 <div class="action-container">
@@ -128,8 +110,6 @@ async function criarTabelaTarefa() {
                             '${element.titulo}',
                             '${element.descricao}',
                             '${date}'
-                            '${a}'
-                            
                         )"
                         class="btn-action btn-edit"
                     >
@@ -157,12 +137,11 @@ window.criarTabelaTarefa = criarTabelaTarefa;
 // =        EDITAR USUÁRIO                    =
 // ============================================
 
-window.prepararEdicao = function (id, titulo, descricao, criado_em, urgencia) {
+window.prepararEdicao = function (id, titulo, descricao, criado_em) {
     document.getElementById('tarefa-id').value = id;
     document.getElementById('titulo').value = titulo;
     document.getElementById('descricao').value = descricao;
     document.getElementById('criado_em').value = criado_em;
-    document.getElementById('urgencia').value = urgencia;
 
     formTitulo.textContent = 'Editar Tarefa';
     btnSalvar.textContent = 'Atualizar Tarefa';
@@ -181,23 +160,21 @@ async function lidarComEnvioDoFormulario(event) {
     const titulo = document.getElementById('titulo').value;
     const descricao = document.getElementById('descricao').value;
     const criado_em = document.getElementById('criado_em').value;
-    const urgencia = document.getElementById('urgencia').value;
 
     let sucesso = false;
 
     if (id) {
-        console.log('Atualizando usuário...', id, titulo, descricao, criado_em, urgencia);
+        console.log('Atualizando usuário...', id, titulo, descricao, criado_em);
 
         sucesso = await sqlAtualizarTarefa(
             titulo,
             descricao,
-            id,
-            urgencia
+            id
         );
 
         if (sucesso) {
             mostrarToast(
-                'Tarefa atualizada com sucesso!',
+                'Tarefa atualizado com sucesso!',
                 'success'
             );
         }
@@ -210,7 +187,7 @@ async function lidarComEnvioDoFormulario(event) {
 
         if (sucesso) {
             mostrarToast(
-                'Tarefa cadastrada com sucesso!',
+                'Usuário cadastrado com sucesso!',
                 'success'
             );
         }
