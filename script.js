@@ -91,6 +91,21 @@ async function criarTabelaTarefa() {
     dados.forEach(element => {
         const linha = document.createElement('tr');
         const date = new Date(element.criado_em).toLocaleString('pt-BR')
+         let a;
+
+        
+        if (element.urgencia === 'nao-urgente') {
+           a =`<span class="badge nao-urgente">Não Urgente</span>`;
+        }
+
+        if (element.urgencia === 'urgente') {
+            a = `<span class="badge urgente">Urgente</span>`; 
+        }
+
+        if (element.urgencia === 'normal') {
+            a = `<span class="badge normal">Normal</span>`;
+        }
+        
         linha.innerHTML = `
             <td class="cell-id">#${element.id}</td>
 
@@ -100,6 +115,7 @@ async function criarTabelaTarefa() {
             </td>
 
             <td><span class="badge badge-data">${date}</span></td>
+            <td><span class="badge badge-data">${a}</span></td>
 
             <td>
                 <div class="action-container">
@@ -110,6 +126,7 @@ async function criarTabelaTarefa() {
                             '${element.titulo}',
                             '${element.descricao}',
                             '${date}'
+                            
                         )"
                         class="btn-action btn-edit"
                     >
