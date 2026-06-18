@@ -43,6 +43,16 @@
                                          required>
 
                                 </div>
+                                <!-- -- URGENCIA -- -->
+                                <div class="form-group">
+                                    <label class="form-label" for="urgencia">Urgencia<span
+                                            class="required">*</span></label>
+                                    <select class="form-control" id="urgencia">
+                                        <option value="nao-urgente">Tarefa Não Urgente</option>
+                                        <option value="normal">Tarefa Normal</option>
+                                        <option value="urgente">Tarefa Urgente</option>
+                                    </select>
+                                </div>
 
                                 <button type="submit" id="btn-salvar" class="btn-submit">
                                     <i class="fas fa-save"></i><span id="btn-salvar-text">Salvar Tarefa</span>
@@ -68,6 +78,7 @@
                                             <th>ID</th>
                                             <th>Titulo / Descrição</th>
                                             <th>Criado em</th>
+                                            <th>Urgencia</th>
                                             <th class="text-center">Ações</th>
                                         </tr>
                                     </thead>
