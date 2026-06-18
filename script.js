@@ -109,8 +109,6 @@ async function criarTabelaTarefa() {
                     <button
                         onclick="prepararEdicao(
                             ${element.id},
-                            '${tituloEscapado}',
-                            '${descricaoEscapada}',
                             '${element.urgencia}'
                         )"
                         class="btn-action btn-edit"
