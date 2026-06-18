@@ -5,11 +5,19 @@ import {
     sqlDeletarTarefa,
 } from './script_db.js';
 
+// ------ Elementos principais do HTML -------------------------
+
 const formTarefa = document.getElementById('form-tarefa');
 const tabelaTarefa = document.getElementById('tabela-corpo');
 const btnCancelar = document.getElementById('btn-cancelar');
 const formTitulo = document.getElementById('form-titulo');
 const btnSalvar = document.getElementById('btn-salvar-text');
+
+// ================================
+// =        FUNÇÕES VISUAIS       =
+// ================================
+
+
 
 function limparFormulario() {
     formTarefa.reset();
@@ -59,17 +67,9 @@ function mostrarToast(mensagem, tipo = 'success') {
     }, 3000);
 }
 
-function badgeUrgencia(urgencia) {
-    if (urgencia === 'urgente') {
-        return '<span class="badge urgente">Urgente</span>';
-    }
-
-    if (urgencia === 'normal') {
-        return '<span class="badge normal">Normal</span>';
-    }
-
-    return '<span class="badge nao-urgente">Não Urgente</span>';
-}
+// ============================================
+// =      Ler dados no BD e criar tabela      =
+// ============================================
 
 async function criarTabelaTarefa() {
     const dados = await consultarDiretoComFetch();
@@ -79,7 +79,7 @@ async function criarTabelaTarefa() {
     if (!dados || dados.length === 0) {
         tabelaTarefa.innerHTML = `
             <tr>
-                <td colspan="5" class="empty-state">
+                <td colspan="4" class="empty-state">
                     Nenhuma Tarefa encontrada...
                 </td>
             </tr>
@@ -87,11 +87,10 @@ async function criarTabelaTarefa() {
         return;
     }
 
+    
     dados.forEach(element => {
         const linha = document.createElement('tr');
-
-        const date = new Date(element.criado_em).toLocaleString('pt-BR');
-
+        const date = new Date(element.criado_em).toLocaleString('pt-BR')
         linha.innerHTML = `
             <td class="cell-id">#${element.id}</td>
 
@@ -101,7 +100,6 @@ async function criarTabelaTarefa() {
             </td>
 
             <td><span class="badge badge-data">${date}</span></td>
-            <td>${badgeUrgencia(element.urgencia)}</td>
 
             <td>
                 <div class="action-container">
@@ -109,9 +107,9 @@ async function criarTabelaTarefa() {
                     <button
                         onclick="prepararEdicao(
                             ${element.id},
-                            '${element.titulo}'
-                            '${element.descricao}'
-                            '${element.urgencia}'
+                            '${element.titulo}',
+                            '${element.descricao}',
+                            '${date}'
                         )"
                         class="btn-action btn-edit"
                     >
@@ -135,11 +133,15 @@ async function criarTabelaTarefa() {
 
 window.criarTabelaTarefa = criarTabelaTarefa;
 
-window.prepararEdicao = function (id, titulo, descricao, urgencia) {
+// ============================================
+// =        EDITAR USUÁRIO                    =
+// ============================================
+
+window.prepararEdicao = function (id, titulo, descricao, criado_em) {
     document.getElementById('tarefa-id').value = id;
     document.getElementById('titulo').value = titulo;
     document.getElementById('descricao').value = descricao;
-    document.getElementById('urgencia').value = urgencia;
+    document.getElementById('criado_em').value = criado_em;
 
     formTitulo.textContent = 'Editar Tarefa';
     btnSalvar.textContent = 'Atualizar Tarefa';
@@ -147,44 +149,45 @@ window.prepararEdicao = function (id, titulo, descricao, urgencia) {
     btnCancelar.classList.remove('hidden');
 };
 
+// ============================================
+// =      SALVAR / ATUALIZAR USUÁRIO          =
+// ============================================
+
 async function lidarComEnvioDoFormulario(event) {
     event.preventDefault();
 
     const id = document.getElementById('tarefa-id').value;
     const titulo = document.getElementById('titulo').value;
     const descricao = document.getElementById('descricao').value;
-    const urgencia = document.getElementById('urgencia').value;
+    const criado_em = document.getElementById('criado_em').value;
 
     let sucesso = false;
 
     if (id) {
-        console.log('Atualizando usuário...', id, titulo, descricao, urgencia);
+        console.log('Atualizando usuário...', id, titulo, descricao, criado_em);
 
         sucesso = await sqlAtualizarTarefa(
             titulo,
             descricao,
-            id,
-            urgencia
+            id
         );
 
         if (sucesso) {
             mostrarToast(
-                'Tarefa atualizada com sucesso!',
+                'Tarefa atualizado com sucesso!',
                 'success'
             );
         }
     } else {
-        console.log('Criando novo usuário...', titulo, descricao, urgencia);
+        console.log('Criando novo usuário...', titulo, descricao);
 
         sucesso = await insertTarefa(
             titulo,
-            descricao,
-            urgencia
-        );
+            descricao);
 
         if (sucesso) {
             mostrarToast(
-                'Tarefa cadastrada com sucesso!',
+                'Usuário cadastrado com sucesso!',
                 'success'
             );
         }
@@ -201,6 +204,10 @@ async function lidarComEnvioDoFormulario(event) {
     limparFormulario();
     criarTabelaTarefa();
 }
+
+// ============================================
+// =          DELETAR USUÁRIO                 =
+// ============================================
 
 window.deletarTarefa = async function (id) {
     const confirmar = confirm(
@@ -226,6 +233,10 @@ window.deletarTarefa = async function (id) {
     }
 };
 
+// ============================================
+// =            EVENTOS                       =
+// ============================================
+
 formTarefa.addEventListener(
     'submit',
     lidarComEnvioDoFormulario
@@ -235,5 +246,9 @@ btnCancelar.addEventListener(
     'click',
     limparFormulario
 );
+
+// ============================================
+// =            INICIALIZAÇÃO                 =
+// ============================================
 
 criarTabelaTarefa();
