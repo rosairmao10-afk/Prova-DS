@@ -17,6 +17,7 @@
                 <div class="layout-grid">
                     <div class="slide-bar">
 
+                        <!-- --- FORMULARIO --- -->
                         <div class="form-card">
                             <div class="form-header">
                                 <h2 id="form-titulo" class="form-title">Nova Tarefa</h2>
@@ -27,27 +28,20 @@
 
                             <form id="form-tarefa" class="form-body">
                                 <input type="hidden" id="tarefa-id" value="">
+                                <input type="hidden" id="criado_em" value="">
                                 <div class="form-group">
                                     <label class="form-label" for="titulo">Titulo <span
                                             class="required">*</span></label>
                                     <input type="text" id="titulo" class="form-control" required>
                                 </div>
 
+                                <!-- -- descrição --- -->
                                 <div class="form-group">
-                                    <label class="form-label" for="descricao">Descrição</label>
+                                    <label class="form-label" for="descricao">Descrição</label></label>
 
                                     <input type="text" id="descricao" class="form-control"
                                          required>
 
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="urgencia">Urgencia<span
-                                            class="required">*</span></label>
-                                    <select class="form-control" id="urgencia">
-                                        <option value="nao-urgente">Tarefa Não Urgente</option>
-                                        <option value="normal">Tarefa Normal</option>
-                                        <option value="urgente">Tarefa Urgente</option>
-                                    </select>
                                 </div>
 
                                 <button type="submit" id="btn-salvar" class="btn-submit">
@@ -62,7 +56,7 @@
                         <div class="table-card">
                             <div class="form-header">
                                 <h2 class="form-title">Tarefas Cadastradas</h2>
-                                <button onclick="criarTabelaTarefa()" class="btn-refresh">
+                                <button onclick="criarTabelaTarefa" class="btn-refresh">
                                     <i class="fas fa-sync-alt"></i>Atualizar
                                 </button>
                             </div>
@@ -74,13 +68,12 @@
                                             <th>ID</th>
                                             <th>Titulo / Descrição</th>
                                             <th>Criado em</th>
-                                            <th>Urgencia</th>
                                             <th class="text-center">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tabela-corpo">
                                         <tr>
-                                            <td colspan="5" class="empty-state">
+                                            <td colspan="4" class="empty-state">
                                                 <i class="fas fa-spinner fa-spin"></i>
                                                 <br>
                                                 Carregando Dados...
