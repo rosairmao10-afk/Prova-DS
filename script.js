@@ -90,6 +90,7 @@ async function criarTabelaTarefa() {
     
     dados.forEach(element => {
         const linha = document.createElement('tr');
+        
         function badgeUrgencia(urgencia) {
             if (urgencia === 'urgente') { 
             return '<span class="badge urgente">Urgente</span>'; 
@@ -124,8 +125,8 @@ async function criarTabelaTarefa() {
                             ${element.id},
                             '${element.titulo}',
                             '${element.descricao}',
-                            '${date}'
-                            '${a}'
+                            '${date}'    
+                            '${badgeUrgencia(element.urgencia)}'
                             
                         )"
                         class="btn-action btn-edit"
