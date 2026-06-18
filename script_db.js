@@ -32,11 +32,11 @@ async function executarQueryNeon(querySQL, parametros = []) {
 
 // ----- C - CREATE ----------------
 
-export async function insertTarefa(titulo, descricao) {
+export async function insertTarefa(titulo, descricao, urgencia) {
     console.log("Cadastrando usuario no banco: ", { titulo, descricao });
-    const query = 'INSERT INTO tarefas (titulo, descricao) VALUES($1, $2) RETURNING *'
+    const query = 'INSERT INTO tarefas (titulo, descricao, urgencia) VALUES($1, $2, $3) RETURNING *'
 
-    const params = [titulo, descricao];
+    const params = [titulo, descricao, urgencia];
 
     const linhas = await executarQueryNeon(query, params);
     return linhas !== null;
