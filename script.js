@@ -188,7 +188,8 @@ async function lidarComEnvioDoFormulario(event) {
         sucesso = await sqlAtualizarTarefa(
             titulo,
             descricao,
-            id
+            id,
+            urgencia
         );
 
         if (sucesso) {
@@ -198,11 +199,12 @@ async function lidarComEnvioDoFormulario(event) {
             );
         }
     } else {
-        console.log('Criando novo usuário...', titulo, descricao);
+        console.log('Criando novo usuário...', titulo, descricao, urgencia);
 
         sucesso = await insertTarefa(
             titulo,
-            descricao);
+            descricao,
+            urgencia);
 
         if (sucesso) {
             mostrarToast(
