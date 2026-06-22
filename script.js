@@ -159,6 +159,7 @@ window.prepararEdicao = function (id, titulo, descricao, criado_em) {
     document.getElementById('titulo').value = titulo;
     document.getElementById('descricao').value = descricao;
     document.getElementById('criado_em').value = criado_em;
+    document.getElementById('urgencia').value = urgencia;
 
     formTitulo.textContent = 'Editar Tarefa';
     btnSalvar.textContent = 'Atualizar Tarefa';
@@ -177,11 +178,12 @@ async function lidarComEnvioDoFormulario(event) {
     const titulo = document.getElementById('titulo').value;
     const descricao = document.getElementById('descricao').value;
     const criado_em = document.getElementById('criado_em').value;
+    const urgencia = document.getElementById('urgencia').value;
 
     let sucesso = false;
 
     if (id) {
-        console.log('Atualizando usuário...', id, titulo, descricao, criado_em);
+        console.log('Atualizando usuário...', id, titulo, descricao, criado_em, urgencia);
 
         sucesso = await sqlAtualizarTarefa(
             titulo,
