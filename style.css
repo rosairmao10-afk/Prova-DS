@@ -397,12 +397,17 @@ Elementos Dinâmicos gerados por JS
     font-weight: 700;
 }
 
-.badge-active {
+.normal {
+    background-color: var(--blue-100);
+    color: var(--blue-600);
+}
+
+.nao-urgente {
     background-color: var(--emerald-100);
     color: var(--emerald-700);
 }
 
-.badge-inactive {
+.urgente {
     background-color: var(--rose-100);
     color: var(--rose-700);
 }
