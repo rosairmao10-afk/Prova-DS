@@ -13,11 +13,23 @@ const btnCancelar = document.getElementById('btn-cancelar');
 const formTitulo = document.getElementById('form-titulo');
 const btnSalvar = document.getElementById('btn-salvar-text');
 
+let tarefasCache = [];
+
+const BADGES_URGENCIA = {
+    'nao-urgente': '<span class="badge nao-urgente">Não Urgente</span>',
+    'urgente': '<span class="badge urgente">Urgente</span>',
+    'normal': '<span class="badge normal">Normal</span>',
+};
+
 // ================================
 // =        FUNÇÕES VISUAIS       =
 // ================================
 
-
+function escapeHtml(valor) {
+    const div = document.createElement('div');
+    div.textContent = valor ?? '';
+    return div.innerHTML;
+}
 
 function limparFormulario() {
     formTarefa.reset();
@@ -74,9 +86,10 @@ function mostrarToast(mensagem, tipo = 'success') {
 async function criarTabelaTarefa() {
     const dados = await consultarDiretoComFetch();
 
+    tarefasCache = dados || [];
     tabelaTarefa.innerHTML = '';
 
-    if (!dados || dados.length === 0) {
+    if (tarefasCache.length === 0) {
         tabelaTarefa.innerHTML = `
             <tr>
                 <td colspan="4" class="empty-state">
@@ -87,25 +100,163 @@ async function criarTabelaTarefa() {
         return;
     }
 
-    
-    dados.forEach(element => {
+    tarefasCache.forEach(element => {
         const linha = document.createElement('tr');
-        const date = new Date(element.criado_em).toLocaleString('pt-BR')
-         let a;
+        const date = new Date(element.criado_em).toLocaleString('pt-BR');
+        const badgeUrgencia = BADGES_URGENCIA[element.urgencia] || '';
 
-        
-        if (element.urgencia === 'nao-urgente') {
-           a =`<span class="badge nao-urgente">Não Urgente</span>`;
-        }
+        linha.innerHTML = `
+            <td class="cell-id">#${element.id}</td>
 
-        if (element.urgencia === 'urgente') {
-            a = `<span class="badge urgente">Urgente</span>`; 
-        }
+            <td>
+                <p class="cell-name">${escapeHtml(element.titulo)}</p>
+                <p class="cell-descricao">${escapeHtml(element.descricao)}</p>
+            </td>
 
-        if (element.urgencia === 'normal') {
-            a = `<span class="badge normal">Normal</span>`;
+            <td><span class="badge badge-data">${date}</span></td>
+            <td>${badgeUrgencia}</td>
+
+            <td>
+                <div class="action-container">
+
+                    <button
+                        type="button"
+                        data-action="editar"
+                        data-id="${element.id}"
+                        class="btn-action btn-edit"
+                    >
+                        <i class="fas fa-pen"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        data-action="deletar"
+                        data-id="${element.id}"
+                        class="btn-action btn-delete"
+                    >
+                        <i class="fas fa-trash"></i>
+                    </button>
+
+                </div>
+            </td>
+        `;
+
+        tabelaTarefa.appendChild(linha);
+    });
+}
+
+window.criarTabelaTarefa = criarTabelaTarefa;
+
+// ============================================
+// =        EDITAR TAREFA                      =
+// ============================================
+
+function prepararEdicao(id) {
+    const tarefa = tarefasCache.find(t => t.id === id);
+
+    if (!tarefa) return;
+
+    document.getElementById('tarefa-id').value = tarefa.id;
+    document.getElementById('titulo').value = tarefa.titulo;
+    document.getElementById('descricao').value = tarefa.descricao;
+    document.getElementById('urgencia').value = tarefa.urgencia;
+
+    formTitulo.textContent = 'Editar Tarefa';
+    btnSalvar.textContent = 'Atualizar Tarefa';
+
+    btnCancelar.classList.remove('hidden');
+}
+
+// ============================================
+// =      SALVAR / ATUALIZAR TAREFA           =
+// ============================================
+
+async function lidarComEnvioDoFormulario(event) {
+    event.preventDefault();
+
+    const id = document.getElementById('tarefa-id').value;
+    const titulo = document.getElementById('titulo').value;
+    const descricao = document.getElementById('descricao').value;
+    const urgencia = document.getElementById('urgencia').value;
+
+    let sucesso = false;
+
+    if (id) {
+        console.log('Atualizando tarefa...', id, titulo, descricao, urgencia);
+
+        sucesso = await sqlAtualizarTarefa(
+            titulo,
+            descricao,
+            id,
+            urgencia
+        );
+
+        if (sucesso) {
+            mostrarToast('Tarefa atualizada com sucesso!', 'success');
         }
-        
+    } else {
+        console.log('Criando nova tarefa...', titulo, descricao, urgencia);
+
+        sucesso = await insertTarefa(titulo, descricao, urgencia);
+
+        if (sucesso) {
+            mostrarToast('Tarefa cadastrada com sucesso!', 'success');
+        }
+    }
+
+    if (!sucesso) {
+        mostrarToast('Ocorreu um erro na operação.', 'error');
+        return;
+    }
+
+    limparFormulario();
+    criarTabelaTarefa();
+}
+
+// ============================================
+// =          DELETAR TAREFA                  =
+// ============================================
+
+async function deletarTarefa(id) {
+    const confirmar = confirm('Tem certeza que deseja excluir esta tarefa?');
+
+    if (!confirmar) return;
+
+    const sucesso = await sqlDeletarTarefa(id);
+
+    if (sucesso) {
+        mostrarToast('Tarefa excluída com sucesso!', 'success');
+        criarTabelaTarefa();
+    } else {
+        mostrarToast('Erro ao excluir a tarefa.', 'error');
+    }
+}
+
+// ============================================
+// =            EVENTOS                       =
+// ============================================
+
+formTarefa.addEventListener('submit', lidarComEnvioDoFormulario);
+btnCancelar.addEventListener('click', limparFormulario);
+
+tabelaTarefa.addEventListener('click', (event) => {
+    const botao = event.target.closest('button[data-action]');
+    if (!botao) return;
+
+    const id = Number(botao.dataset.id);
+
+    if (botao.dataset.action === 'editar') {
+        prepararEdicao(id);
+    } else if (botao.dataset.action === 'deletar') {
+        deletarTarefa(id);
+    }
+});
+
+// ============================================
+// =            INICIALIZAÇÃO                 =
+// ============================================
+
+criarTabelaTarefa();
         linha.innerHTML = `
             <td class="cell-id">#${element.id}</td>
 
