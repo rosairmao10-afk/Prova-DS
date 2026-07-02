@@ -1,0 +1,41 @@
+body{
+   overflow: hidden;
+   background-color: #fdfdfd;
+   margin: 0;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100vh;
+}
+
+#campo{
+    position: relative;
+    width: 600px;
+    height: 400px;
+    background-color: black;
+    border: 2px solid black;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+#tudo {
+background: #fdfdfd;
+}
+
+#raquete1{
+    position: absolute;
+    left: 0;
+    top: 100px;
+    width: 20px;
+    height: 180px;
+    background-color: rgb(255, 0, 0);
+}
+
+#raquete2{
+    position: absolute;
+    right: 0;
+    top: 100px;
+    width: 20px;
+    height: 180px;
+    background-color: rgb(0, 42, 255);
+}
